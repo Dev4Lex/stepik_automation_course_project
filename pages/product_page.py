@@ -9,12 +9,25 @@ class ProductPage(BasePage):
 
     def add_to_basket(self):
         add_to_basket = self.browser.find_element(*ProductPageLocators.ADD_TO_BASKET_BUTTON)
-        add_to_basket.click()
-        self.solve_quiz_and_get_code()
+        if "promo" in self.browser.current_url:
+            add_to_basket.click()
+            self.solve_quiz_and_get_code()
+        else:
+            add_to_basket.click()
 
     def should_be_product_added_to_basket(self):
         self.should_be_product_name_in_message()
         self.should_be_basket_total_equal_to_product_price()
+
+    def should_not_be_success_message(self):
+        """Сообщение об успехе не должно появляться"""
+        assert self.is_not_element_present(*ProductPageLocators.BASKET_SUCCESS_MESSAGE), \
+            "Success message is presented, but should not be"
+
+    def should_disappear_success_message(self):
+        """Сообщение об успехе должно исчезнуть"""
+        assert self.is_disappeared(*ProductPageLocators.BASKET_SUCCESS_MESSAGE), \
+            "Success message did not disappear"
 
     def should_be_product_name_in_message(self):
         product_name = self.browser.find_element(*ProductPageLocators.PRODUCT_NAME).text
